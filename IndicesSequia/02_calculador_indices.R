@@ -316,7 +316,7 @@ resultados.indices.sequia <- task.estimar.parametros$run(number.of.processes = c
                                                      script = script,
                                                      estaciones = estaciones, 
                                                      ubicaciones_a_procesar = ubicaciones_a_procesar,
-                                                     input.values = configuraciones.indices[1,],
+                                                     input.values = configuraciones.indices,
                                                      #input.value = configuraciones.indices[1,],
                                                      indice_parametro = indice_parametro)
 # Agregar log de la tarea al log del script
@@ -360,8 +360,7 @@ resultados.indices.sequia <- task.indices.sequia$run(number.of.processes = confi
                                                      config = config, 
                                                      input.values = ubicaciones_a_procesar, 
                                                      #input.value = ubicaciones_a_procesar[1,],
-                                                     configuraciones.indices, estadisticas.moviles,
-                                                     usar_parametros_estimados = TRUE)
+                                                     configuraciones.indices, estadisticas.moviles)
 
 # Agregar log de la tarea al log del script
 file.append(script_logfile, task_logfile)

@@ -2,7 +2,7 @@
 # --- Funciones a ejecutar por parte de cada worker ----
 # -----------------------------------------------------------------------------#
 
-CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configuraciones.indices, estadisticas.moviles, usar_parametros_estimados) {
+CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configuraciones.indices, estadisticas.moviles) {
   # Obtener la ubicación para la cual se calcularán los índices
   ubicacion <- input.value
   
@@ -172,14 +172,13 @@ CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configur
           # a. Buscar fechas procesables correspondientes a esa pentada
           fechas.procesables.pentada <- fechas.procesables[which(fechas.pentada.ano == pentada.ano)]
           
-          
           # Identificar estaciones vecinas más cercanas y asignar
           # parametros a la ubicacion sobre la que se esta iterando.
           if (!is.na(config$params$vecino.mas.cercano$distancia)) {
             
             # Informar estado de la ejecución
             script$info(glue::glue("Identificando vecinos para la ubicación: ",
-                                   "{ubicacion %>% dplyr::pull(!!id_column)}",
+                                   "{ubicacion %>% dplyr::pull(!!id_column)} ",
                                    "en un rango de {config$params$vecino.mas.cercano$distancia} km"))
             
             # Convertir a matriz de coordenadas
@@ -191,7 +190,7 @@ CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configur
             # Agregar las distancias al dataframe
             estaciones_cercanas <- estaciones %>%
               dplyr::mutate(distancia_objetivo = distancias_km) %>%
-              # Filtrar estaciones dentro del rango de 25 km
+              # Filtrar estaciones dentro del rango de N km
               dplyr::filter(distancia_objetivo <= config$params$vecino.mas.cercano$distancia)
             
             parametros.vecinos <- indice_parametro %>%
@@ -203,7 +202,7 @@ CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configur
               # Informar estado de la ejecución
               script$info(glue::glue("No hay vecinos para la ubicación: ",
                                      "{ubicacion %>% dplyr::pull(!!id_column)} ",
-                                     "en un rango de {config$params$vecino.mas.cercano$distancia} km ",
+                                     "en un rango de {config$params$vecino.mas.cercano$distancia} km, ",
                                      "se usarán parámetros interpolados"))
             }
             
@@ -308,68 +307,6 @@ CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configur
       }
     }
   )
-  
-  
-  # Leer todos los archivos con resultados de tests, crear un único tibble
-  # con todos los datos en esos archivos y guardarlos en solo dos archivos
-  if (!usar_parametros_estimados) {
-    script$info("Leyendo y borrando los archivos temporales con los resultados de los tests")
-    indice_resultados_tests <- purrr::map_dfr(
-      .x = seq(from = 1, to = nrow(configuraciones.indices)),
-      .f = function(row_index) {
-        configuracion.indice <- configuraciones.indices[row_index, ]
-        resultados_tests_conf <- purrr::map_dfr(
-          .x = pentadas.unicas,
-          .f = function(pentada.ano) { 
-            resultados_tests_conf_pent <- NULL
-            pentada.fin <- fecha.a.pentada.ano(fechas.procesables[which(fechas.pentada.ano == pentada.ano)][1])
-            file_name <- glue::glue("{config$dir$data}/control/resultados_tests/",
-                                    "resultados_tests_{ubicacion %>% dplyr::pull(!!id_column)}_",
-                                    "{configuracion.indice$id}_{pentada.fin}.feather")
-            resultados_tests_conf_pent <- feather::read_feather(file_name) %>%
-              dplyr::mutate_if(is.factor, as.character)
-            base::file.remove(file_name); base::remove(file_name)
-            return(resultados_tests_conf_pent)
-          })
-        return(resultados_tests_conf)
-      })
-    indice_resultados_tests %>%
-      dplyr::left_join(configuraciones.indices, by = c("indice_configuracion_id" = "id")) 
-    script$info(glue::glue("Generando archivo con los resultados de los tests: {config$files$indices_sequia$result_tst}"))
-    filename = glue::glue("{config$dir$data}/{config$files$indices_sequia$result_tst}")
-    data.table::fwrite(indice_resultados_tests, file = filename, nThread = config$files$avbl_cores, append = TRUE)
-    #base::remove(filename); base::invisible(base::gc())
-    
-    # Leer todos los archivos con parametros de indices, crear un único tibble
-    # con todos los datos en esos archivos y guardarlos en un solo archivo
-    script$info("Leyendo y borrando los archivos temporales con los parámetros de índices")
-    indice_parametros <- purrr::map_dfr(
-      .x = seq(from = 1, to = nrow(configuraciones.indices)),
-      .f = function(row_index) {
-        configuracion.indice <- configuraciones.indices[row_index, ]
-        parametros_conf <- purrr::map_dfr(
-          .x = pentadas.unicas,
-          .f = function(pentada.ano) { 
-            parametros_conf_pent <- NULL
-            pentada.fin <- fecha.a.pentada.ano(fechas.procesables[which(fechas.pentada.ano == pentada.ano)][1])
-            file_name <- glue::glue("{config$dir$data}/control/parametros/",
-                                    "parametros_{ubicacion %>% dplyr::pull(!!id_column)}_",
-                                    "{configuracion.indice$id}_{pentada.fin}.feather")
-            if(base::file.exists(file_name)) {
-              parametros_conf_pent <- feather::read_feather(file_name) %>%
-                dplyr::mutate_if(is.factor, as.character)
-              #base::file.remove(file_name); base::remove(file_name)
-            }
-            return(parametros_conf_pent)
-          })
-        return(parametros_conf)
-      })
-    script$info(glue::glue("Generando archivo con los parámetros de los índices: {config$files$indices_sequia$parametros}"))
-    filename = glue::glue("{config$dir$data}/{config$files$indices_sequia$parametros}")
-    data.table::fwrite(indice_parametros, file = filename, nThread = config$files$avbl_cores, append = TRUE)
-    base::remove(filename); base::invisible(base::gc())
-  }
-  
   
   return (resultado)
 }
@@ -492,7 +429,6 @@ AjustarParametrosUbicacionFecha <- function(ubicacion, fecha.procesable, configu
   
   return (parametros.ajuste)
 }
-
 
 
 CalcularIndicesSequiaUbicacionFecha <- function(ubicacion, fecha.procesable, parametros.ajuste, configuracion.indice, 
@@ -730,7 +666,7 @@ EstimarParametrosConfiguracion <- function(input.value,
               
               script$info(glue::glue("Simulando parametros a partir de la estaciones para la estacion: {station} y pentada: {pentada}"))
               
-              # Fijar una semilla para asegurar reprodubilidad
+              # Fijar una semilla para asegurar reproducibilidad
               set.seed(1234)
               
               parametros_simulados <- parametros_pentada_ubicaciones %>%
