@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------------------
+# Directorios de trabajo
+# ------------------------------------------------------------------------------
+dir:  
+  base: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IndicesSequia"
+  run: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IndicesSequia/run"
+  estadisticas:
+    run: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/EstadisticasMoviles/run"
+  lib: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/lib/R"
+  data: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/data"
+# ------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+# Sistemas de coordenadas a utilizar
+# -----------------------------------------------------------------------------------
+proj4string:
+  latlon: '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
+  planar: "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs"
+# -----------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# Cantidad maxima de procesos paralelos
+# ------------------------------------------------------------------------------
+max.procesos: 8
+# ------------------------------------------------------------------------------
+

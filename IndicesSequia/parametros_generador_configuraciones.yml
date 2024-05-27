@@ -1,0 +1,13 @@
+
+
+# ------------------------------------------------------------------------------
+# Definicion de configuraciones de indices
+# ------------------------------------------------------------------------------
+indices:
+  SPI: 
+    escala: [ 1, 2, 3, 4, 5, 6 ]
+    periodo.referencia: [ 1971-2010 ]
+    distribucion: [ 'Gamma' ]
+    metodo.ajuste: [  'ML-SinRemuestreo' ]  # 'L-Momentos-PP-PWM', 'L-Momentos-UB-PWM', 'ML-ConRemuestreo' ]
+
+# ------------------------------------------------------------------------------
