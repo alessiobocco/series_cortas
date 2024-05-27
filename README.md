@@ -1,9 +1,12 @@
-# Scripts en R para la caracterización de la amenaza climática de sequías 
+# Scripts en R para el cálculo de índices de sequía en estaciones automáticas (EMAs)
 
+Este repositorio contiene código para calcular índices de sequía estandarizados (SPI, SPEI) para estaciones meteorológicas con series temporales cortas derivadas de estaciones automáticas. Se han implementado tres metodologías diferentes para este cálculo:
 
-El presente repositorio contiene los scripts para realizar el análisis probabilista de amenaza de sequías desarrollado en el marco de la Cooperación Técnica RG-T3308, “Diseño e Implementación de un Sistema de Información sobre Sequías para el Sur de América del Sur (SISSA)”  
-
-El repositorio contiene cuatro carpetas principales: 
+ * **Asignación del Vecino Más Cercano**: Si la estación vecina está dentro de un rango de distancia determinado por el usuario, se asignan los valores de la estación vecina más cercana.
+ * **Ponderación por el Inverso de la Distancia**: Se ponderan los efectos de los N vecinos más cercanos utilizando el inverso de la distancia.
+ * **Interpolación usando Kriging**: Se utiliza Kriging para estimar los parámetros de los índices para estaciones más alejadas. Este método permite la estimación de la variabilidad de los parámetros y generar N realizaciones de índices de sequía para estimar la variabilidad o el error de estimación.
+   
+Contenido del Repositorio
 
 * data: Ubicación donde se encuentran los datos de entrada.
 * EstadísticasMoviles: Contiene los scripts necesarios para la agregación diferentes escalas temporales. Además, se encuentra un documento que explica el mecanismo de agregación de variables (precipitación y temperaturas máxima y mínima) utilizando ventanas móviles basadas en péntadas.
