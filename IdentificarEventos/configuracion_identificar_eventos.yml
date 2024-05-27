@@ -1,0 +1,17 @@
+# ------------------------------------------------------------------------------
+# Directorios de trabajo
+# ------------------------------------------------------------------------------
+dir:  
+  base: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IdentificarEventos
+  run: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IdentificarEventos/run/
+  indices.sequia:
+    run: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IndicesSequia/run/
+  lib: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/lib/R/
+  data: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/data/
+# ------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# Cantidad maxima de procesos paralelos
+# ------------------------------------------------------------------------------
+max.procesos: 8
+# ------------------------------------------------------------------------------

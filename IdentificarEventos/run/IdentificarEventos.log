@@ -1,0 +1,16 @@
+[INFO] [2024-01-09 13:27:42] Iniciando script IdentificarEventos con PID 1551
+[INFO] [2024-01-09 13:27:42] Buscando resultados del cálculo de índices de sequía, archivo: output/indices_sequia_inta_estimados.csv
+[INFO] [2024-01-09 13:27:42] Buscando configuraciones para los índices a ser calculados, archivo: partial/configuraciones_indices_sequia_inta_estimados.csv
+[INFO] [2024-01-09 13:27:42] Seleccionando configuraciones contempladas al calcular los índices de sequía
+[INFO] [2024-01-09 13:27:42] Lectura del csv finalizada
+[INFO] [2024-01-09 13:27:42] Obtener ubicaciones sobre las cuales iterar
+[INFO] [2024-01-09 13:27:42] Obtención de ubicaciones a iterar finalizada
+[INFO] [2024-01-09 13:27:42] Identificando Eventos
+[INFO] [2024-01-09 13:27:43] * Identificando eventos secos para la ubicación con station_id = 9987011 
+[INFO] [2024-01-09 13:27:43] * Identificando eventos secos para la ubicación con station_id = 87537 
+[INFO] [2024-01-09 13:27:43] * Identificando eventos secos para la ubicación con station_id = 87466 
+[INFO] [2024-01-09 13:27:43] * Identificando eventos humedos para la ubicación con station_id = 9987011 
+[INFO] [2024-01-09 13:27:43] * Identificando eventos humedos para la ubicación con station_id = 87537 
+[INFO] [2024-01-09 13:27:44] * Identificando eventos humedos para la ubicación con station_id = 87466 
+[INFO] [2024-01-09 13:27:44] Guardando resultados en el archivo /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/data/output/eventos_identificados_inta_estimados.csv
+[INFO] [2024-01-09 13:27:44] Finalizando script IdentificarEventos

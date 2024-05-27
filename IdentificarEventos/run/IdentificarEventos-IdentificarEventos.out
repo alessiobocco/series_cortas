@@ -1,0 +1,29 @@
+starting worker for localhost:11701 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+Type: DONE 
+`summarise()` has grouped output by 'station_id'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'station_id'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'station_id'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'station_id'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'station_id'. You can override using the
+`.groups` argument.
+`summarise()` has grouped output by 'station_id'. You can override using the
+`.groups` argument.
+Type: DONE 
