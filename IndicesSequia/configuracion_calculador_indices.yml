@@ -2,12 +2,12 @@
 # Directorios de trabajo
 # ------------------------------------------------------------------------------
 dir:  
-  base: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IndicesSequia"
-  run: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IndicesSequia/run"
+  base: "/Users/alessiobocco/Documents/GitHub/series_cortas/IndicesSequia"
+  run: "/Users/alessiobocco/Documents/GitHub/series_cortas/IndicesSequia/run"
   estadisticas:
-    run: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/EstadisticasMoviles/run"
-  lib: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/lib/R"
-  data: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/data"
+    run: "/Users/alessiobocco/Documents/GitHub/series_cortas/EstadisticasMoviles/run"
+  lib: "/Users/alessiobocco/Documents/GitHub/series_cortas/lib/R"
+  data: "/Users/alessiobocco/Documents/GitHub/series_cortas/data"
 # ------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------------
@@ -18,9 +18,20 @@ proj4string:
   planar: "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs"
 # -----------------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------------
+# Datos de acceso a base de datos
+# -----------------------------------------------------------------------------------
+db:
+  name: crcssa
+  host: localhost
+  port: 5432
+  user: alessiobocco
+  password: ${db.password}
+# -----------------------------------------------------------------------------------
+
 # ------------------------------------------------------------------------------
 # Cantidad maxima de procesos paralelos
 # ------------------------------------------------------------------------------
-max.procesos: 8
+max.procesos: 6
 # ------------------------------------------------------------------------------
 

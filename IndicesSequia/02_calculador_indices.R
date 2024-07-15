@@ -6,7 +6,7 @@ list.of.packages <- c("ADGofTest", "caret", "dplyr", "fitdistrplus", "lmomco", "
                       "lubridate", "magrittr", "mgcv", "purrr", "SCI", "sirad", "SPEI", 
                       "stats", "stringr", "utils", "WRS2", "yaml", "yardstick", "feather",
                       "R6", "futile.logger", "mgcv", "doSNOW", "foreach", "snow", "parallel",
-                      "RPostgres", "data.table", "purrr", "automap", "sf")
+                      "RPostgres", "data.table", "purrr", "automap", "sf", "geosphere")
 for (pack in list.of.packages) {
   if (!require(pack, character.only = TRUE)) {
     stop(paste0("Paquete no encontrado: ", pack))
@@ -178,13 +178,20 @@ if (!fs::dir_exists(glue::glue("{config$dir$data}/output/rasters"))) {
   fs::dir_create(glue::glue("{config$dir$data}/output/rasters"))
 }
 # e) Cargar funciones necesarias
-source(glue::glue("../../lib/crc-api.R"), echo = FALSE)
+source(glue::glue("{config$dir$lib}/crc-api.R"), echo = FALSE)
 
 # f) Variable para almacenar los posibles errores
 errors <- c()
 
-# Configuracion SSL
-httr::set_config( httr::config(ssl_verifypeer = FALSE))
+# g)
+# ii. Conectarse a base de datos
+con <- DBI::dbConnect(drv = RPostgres::Postgres(),
+                      dbname = config$db$name,
+                      user = config$db$user,
+                      password = config$db$password,
+                      host = config$db$host,
+                      port = config$db$port
+)
 # ------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------#
@@ -196,7 +203,7 @@ httr::set_config( httr::config(ssl_verifypeer = FALSE) )
 
 # Obtenemos los datos de las estaciones.
 estaciones <- purrr::map_dfr(
-  .x = config$params$paises,
+  .x = config$params$pais,
   .f = function(pais) {
     est <- ConsumirServicioJSON(url = paste0(config$api$url, glue::glue("/estaciones/{pais}")),
                                 usuario = config$api$user, clave = config$api$pass) 
@@ -210,38 +217,6 @@ estaciones <- purrr::map_dfr(
 estaciones %<>% 
   dplyr::filter(tipo == "C") %>%
   dplyr::rename(lat_dec = latitud, lon_dec = longitud)
-
-# Configuraciones de indices
-#indice_configuracion <- dplyr::tbl(con, "indice_configuracion") %>%
-#  dplyr::collect() %>%
-#  dplyr::rename(internal_id = id) %>%
-#  dplyr::mutate(indice = as.character(indice),
-#                distribucion = as.character(distribucion),
-#                metodo_ajuste = as.character(metodo_ajuste))
-# readr::write_csv(indice_configuracion, "indice_configuracion.csv")
-
-# Fitrar configuraciones deseadas
-indice_configuracion <- readr::read_csv("./indice_configuracion.csv") %>%
-  dplyr::filter(#escala %in% config$params$escalas,
-                escala %in% 1,
-                indice %in% "SPI",
-                metodo_ajuste == "ML-SinRemuestreo")
-
-# Crear objeto con los configuraciones para cada estacion e indice
-combinaciones.parametros <- tidyr::expand_grid(omm_id = estaciones$omm_id,
-                   configuracion_id = indice_configuracion$internal_id)
-
-# Consultar parámetros para las estaciones seleccionadas
-indice_parametro <- purrr::map2_dfr(
-  .x = combinaciones.parametros$omm_id,
-  .y = combinaciones.parametros$configuracion_id,
-  .f = function(estacion_id, configuracion_id) {
-    
-    parametros <- ConsumirServicioJSON(url = paste0(config$api$url, glue::glue("/indices_sequia_parametros_ajuste/{configuracion_id}/{estacion_id}")),
-                                usuario = config$api$user, clave = config$api$pass) 
-    
-  }
-)
 
 # c) Buscar las estadisticas moviles 
 script$info(glue::glue("Buscando estadísticas móviles para calcular indices de sequia, ",
@@ -282,11 +257,40 @@ configuraciones.indices <- configuraciones.indices %>%
                                "{k$distribucion} y metodo_ajuste:{k$metodo_ajuste}!!")
         stop(stop_msg)
       }
-    })
+    }) %>%
+  dplyr::rename(internal_id = id)
+
+# Configuraciones de indices
+# indice_configuracion <- dplyr::tbl(con, "indice_configuracion") %>%
+#  dplyr::collect() %>%
+#  dplyr::mutate(indice = as.character(indice),
+#                distribucion = as.character(distribucion),
+#                metodo_ajuste = as.character(metodo_ajuste))
+# readr::write_csv(indice_configuracion, "indice_configuracion.csv")
+
+# Fitrar configuraciones deseadas
+indice_configuracion <- readr::read_csv("./indice_configuracion.csv") %>%
+  dplyr::inner_join(configuraciones.indices)
+
+# Crear objeto con los configuraciones para cada estacion e indice
+combinaciones.parametros <- tidyr::expand_grid(omm_id = estaciones$omm_id,
+                                               configuracion_id = indice_configuracion$id)
+
+# Consultar parámetros para las estaciones seleccionadas
+indice_parametro <- purrr::map2_dfr(
+  .x = combinaciones.parametros$omm_id,
+  .y = combinaciones.parametros$configuracion_id,
+  .f = function(estacion_id, configuracion_id) {
+    
+    parametros <- ConsumirServicioJSON(url = paste0(config$api$url, glue::glue("/indices_sequia_parametros_ajuste/{configuracion_id}/{estacion_id}")),
+                                       usuario = config$api$user, clave = config$api$pass) 
+    
+  }
+)
 
 # Agregar indice interno para los indices de sequia
 configuraciones.indices %<>%
-  dplyr::left_join(indice_configuracion) 
+  dplyr::inner_join(indice_configuracion) 
 rm(indice_configuracion)
 
 # g) Buscar ubicaciones a las cuales se aplicara el calculo de indices de sequia
@@ -333,8 +337,8 @@ resultados.indices.sequia <- task.estimar.parametros$run(number.of.processes = c
                                                      script = script,
                                                      estaciones = estaciones, 
                                                      ubicaciones_a_procesar = ubicaciones_a_procesar,
-                                                     #input.values = configuraciones.indices,
-                                                     input.value = configuraciones.indices[1,],
+                                                     input.values = configuraciones.indices,
+                                                     #input.value = configuraciones.indices[3,],
                                                      indice_parametro = indice_parametro)
 # Agregar log de la tarea al log del script
 file.append(script_logfile, task_logfile)
@@ -376,6 +380,8 @@ script$info("Calculando indices de sequia")
 resultados.indices.sequia <- task.indices.sequia$run(number.of.processes = config$max.procesos, 
                                                      config = config, 
                                                      input.values = ubicaciones_a_procesar, 
+                                                     estaciones = estaciones,
+                                                     indice_parametro = indice_parametro,
                                                      #input.value = ubicaciones_a_procesar[1,],
                                                      configuraciones.indices, estadisticas.moviles)
 

@@ -2,12 +2,12 @@
 # Directorios de trabajo
 # ------------------------------------------------------------------------------
 dir:  
-  base: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IdentificarEventos
-  run: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IdentificarEventos/run/
+  base: /Users/alessiobocco/Documents/GitHub/series_cortas/IdentificarEventos
+  run: /Users/alessiobocco/Documents/GitHub/series_cortas/IdentificarEventos/run/
   indices.sequia:
-    run: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IndicesSequia/run/
-  lib: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/lib/R/
-  data: /Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/data/
+    run: /Users/alessiobocco/Documents/GitHub/series_cortas/IndicesSequia/run/
+  lib: /Users/alessiobocco/Documents/GitHub/series_cortas/lib/R/
+  data: /Users/alessiobocco/Documents/GitHub/series_cortas/data/
 # ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------

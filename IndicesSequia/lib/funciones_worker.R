@@ -2,7 +2,7 @@
 # --- Funciones a ejecutar por parte de cada worker ----
 # -----------------------------------------------------------------------------#
 
-CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configuraciones.indices, estadisticas.moviles) {
+CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configuraciones.indices, estadisticas.moviles, estaciones, indice_parametro) {
   # Obtener la ubicación para la cual se calcularán los índices
   ubicacion <- input.value
   
@@ -184,7 +184,7 @@ CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configur
             # Convertir a matriz de coordenadas
             coords <- estaciones %>% dplyr::select(lon_dec, lat_dec) %>% as.matrix()
             # Calcular distancias en metros desde la ubicación objetivo a cada estación
-            distancias <- distVincentyEllipsoid(c(ubicacion$lon_dec, ubicacion$lat_dec), coords)
+            distancias <- geosphere::distVincentyEllipsoid(c(ubicacion$lon_dec, ubicacion$lat_dec), coords)
             # Convertir distancias a kilómetros
             distancias_km <- distancias / 1000
             # Agregar las distancias al dataframe
@@ -194,7 +194,7 @@ CalcularIndicesSequiaUbicacion <- function(input.value, script, config, configur
               dplyr::filter(distancia_objetivo <= config$params$vecino.mas.cercano$distancia)
             
             parametros.vecinos <- indice_parametro %>%
-              dplyr::filter(indice_configuracion_id == configuracion.indice$internal_id,
+              dplyr::filter(indice_configuracion_id == configuracion.indice$id,
                             pentada_fin == pentada.ano,
                             omm_id %in% estaciones_cercanas$omm_id)
             
@@ -515,10 +515,23 @@ EstimarParametrosIndices <- function(indice, pentada, param, estaciones, indice_
       y = sf::st_coordinates(.)[, "Y"]
     )
   
-  # Interpolar paramétros usando krigging
-  kriging_result <- automap::autoKrige(valor ~ x + y, indice_parametro_i, grilla_regular)
+  # Verificación de variabilidad
+  if (all(indice_parametro_i$valor == 0) || sd(indice_parametro_i$valor) < .Machine$double.eps) {
+    # Crear un objeto que imite la estructura del resultado de autoKrige
+    kriging_result <- list(
+      krige_output = grilla_regular %>% dplyr::mutate(var1.pred = 0, var1.var = 0),
+      exp_var = NULL,
+      var_model = NULL
+    )
+    return(kriging_result)
+  }
+  
+  # Interpolar parámetros usando kriging
+  kriging_result <- automap::autoKrige(valor ~ 1, indice_parametro_i, grilla_regular)
   return(kriging_result)
 }
+
+
 
 EstimarParametrosConfiguracion <- function(input.value, 
                                            indice_parametro,
@@ -538,13 +551,13 @@ EstimarParametrosConfiguracion <- function(input.value,
   
   # Obtener parametros a estimar
   parametros <- indice_parametro %>%
-    dplyr::filter(indice_configuracion_id %in% configuracion$internal_id) %>%
+    dplyr::filter(indice_configuracion_id %in% configuracion$id) %>%
     dplyr::pull(parametro) %>%
     unique()
   
   # Pentadas son parametros
   pentada_fin <- indice_parametro %>%
-    dplyr::filter(indice_configuracion_id %in% configuracion$internal_id) %>%
+    dplyr::filter(indice_configuracion_id %in% configuracion$id) %>%
     dplyr::pull(pentada_fin) %>%
     unique()
   # Crear una grilla regular vacia para generar los mapas
@@ -559,7 +572,7 @@ EstimarParametrosConfiguracion <- function(input.value,
   
   # Iterar sobre las combinaciones de índices de configuración
   parametros_interpolados <- purrr::map(
-    .x = configuracion$internal_id,
+    .x = configuracion$id,
     .f = function(indice) {
       
       script$info(glue::glue("Interpolando parametros para indice: {indice}\n"))

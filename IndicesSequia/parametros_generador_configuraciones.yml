@@ -10,4 +10,10 @@ indices:
     distribucion: [ 'Gamma' ]
     metodo.ajuste: [  'ML-SinRemuestreo' ]  # 'L-Momentos-PP-PWM', 'L-Momentos-UB-PWM', 'ML-ConRemuestreo' ]
 
+  SPEI: 
+    escala: [ 1, 2, 3, 4, 5, 6 ]
+    periodo.referencia: [ 1971-2010 ]
+    distribucion: [ 'Log-Logistica' ]
+    metodo.ajuste: [  'ML-SinRemuestreo' ]  # 'L-Momentos-PP-PWM', 'L-Momentos-UB-PWM', 'ML-ConRemuestreo' ]
+
 # ------------------------------------------------------------------------------

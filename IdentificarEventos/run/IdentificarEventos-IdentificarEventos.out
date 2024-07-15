@@ -1,4 +1,4 @@
-starting worker for localhost:11701 
+starting worker for localhost:11113 
 Type: EXEC 
 Type: EXEC 
 Type: EXEC 
@@ -13,17 +13,22 @@ The following objects are masked from ‘package:base’:
 
     intersect, setdiff, setequal, union
 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
+Type: EXEC 
 Type: DONE 
-`summarise()` has grouped output by 'station_id'. You can override using the
-`.groups` argument.
-`summarise()` has grouped output by 'station_id'. You can override using the
-`.groups` argument.
-`summarise()` has grouped output by 'station_id'. You can override using the
-`.groups` argument.
-`summarise()` has grouped output by 'station_id'. You can override using the
-`.groups` argument.
-`summarise()` has grouped output by 'station_id'. You can override using the
-`.groups` argument.
-`summarise()` has grouped output by 'station_id'. You can override using the
-`.groups` argument.
 Type: DONE 

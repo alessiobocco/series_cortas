@@ -2,6 +2,6 @@
 # Directorios de trabajo
 # ------------------------------------------------------------------------------
 dir:  
-  base: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/IndicesSequia"
-  data: "/Users/alessiobocco/Programacion/R/SISSA/devel/series_cortas/indices-eventos/data"
+  base: "/Users/alessiobocco/Documents/GitHub/series_cortas/IndicesSequia"
+  data: "/Users/alessiobocco/Documents/GitHub/series_cortas/data"
 # ------------------------------------------------------------------------------
